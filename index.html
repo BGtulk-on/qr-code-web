@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Generator</title>
+  <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    select, input, button, textarea {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #qrcode {
+      text-align: center;
+      margin-top: 20px;
+    }
+    #download {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+    #download a {
+      text-decoration: none;
+      color: white;
+      background-color: #007BFF;
+      padding: 10px 20px;
+      border-radius: 5px;
+      display: inline-block;
+    }
+    #download a:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>QR Code Generator</h1>
+  <div class="container">
+    <label for="type">Select Type:</label>
+    <select id="type" onchange="showFields()">
+      <option value="url">URL</option>
+      <option value="text">Text</option>
+      <option value="email">Email</option>
+      <option value="sms">SMS</option>
+      <option value="wifi">WiFi</option>
+      <option value="vcard">vCard</option>
+      <option value="pdf">PDF</option>
+      <option value="mp3">MP3</option>
+      <option value="image">Image</option>
+    </select>
+
+    <div id="fields">
+      <input id="input" type="text" placeholder="Enter data here">
+    </div>
+
+    <button onclick="generateQRCode()">Generate QR Code</button>
+
+    <div id="qrcode"></div>
+    <div id="download">
+      <a id="downloadLink" download="qrcode.png">Download QR Code</a>
+    </div>
+  </div>
+
+  <script>
+    function showFields() {
+      const type = document.getElementById("type").value;
+      const fields = document.getElementById("fields");
+      fields.innerHTML = "";
+
+      if (type === "url" || type === "text" || type === "pdf" || type === "mp3" || type === "image") {
+        fields.innerHTML = `<input id="input" type="text" placeholder="Enter ${type} here">`;
+      } else if (type === "email") {
+        fields.innerHTML = `
+          <input id="email" type="email" placeholder="Enter email address">
+          <textarea id="subject" placeholder="Enter subject"></textarea>
+          <textarea id="body" placeholder="Enter email body"></textarea>
+        `;
+      } else if (type === "sms") {
+        fields.innerHTML = `
+          <input id="phone" type="text" placeholder="Enter phone number">
+          <textarea id="smsMessage" placeholder="Enter SMS message"></textarea>
+        `;
+      } else if (type === "wifi") {
+        fields.innerHTML = `
+          <input id="ssid" type="text" placeholder="Enter WiFi SSID">
+          <input id="password" type="text" placeholder="Enter WiFi Password">
+          <select id="encryption">
+            <option value="WPA">WPA/WPA2</option>
+            <option value="WEP">WEP</option>
+            <option value="nopass">No Password</option>
+          </select>
+        `;
+      } else if (type === "vcard") {
+        fields.innerHTML = `
+          <input id="name" type="text" placeholder="Enter Name">
+          <input id="phone" type="text" placeholder="Enter Phone Number">
+          <input id="email" type="email" placeholder="Enter Email Address">
+          <input id="org" type="text" placeholder="Enter Organization">
+          <textarea id="note" placeholder="Additional Notes"></textarea>
+        `;
+      }
+    }
+
+    function generateQRCode() {
+      const type = document.getElementById("type").value;
+      let qrData = "";
+
+      if (type === "url" || type === "text" || type === "pdf" || type === "mp3" || type === "image") {
+        qrData = document.getElementById("input").value;
+      } else if (type === "email") {
+        const email = document.getElementById("email").value;
+        const subject = document.getElementById("subject").value;
+        const body = document.getElementById("body").value;
+        qrData = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      } else if (type === "sms") {
+        const phone = document.getElementById("phone").value;
+        const message = document.getElementById("smsMessage").value;
+        qrData = `SMSTO:${phone}:${message}`;
+      } else if (type === "wifi") {
+        const ssid = document.getElementById("ssid").value;
+        const password = document.getElementById("password").value;
+        const encryption = document.getElementById("encryption").value;
+        qrData = `WIFI:T:${encryption};S:${ssid};P:${password};;`;
+      } else if (type === "vcard") {
+        const name = document.getElementById("name").value;
+        const phone = document.getElementById("phone").value;
+        const email = document.getElementById("email").value;
+        const org = document.getElementById("org").value;
+        const note = document.getElementById("note").value;
+        qrData = `BEGIN:VCARD\nVERSION:3.0\nN:${name}\nTEL:${phone}\nEMAIL:${email}\nORG:${org}\nNOTE:${note}\nEND:VCARD`;
+      }
+
+      const qrcodeContainer = document.getElementById("qrcode");
+      qrcodeContainer.innerHTML = "";
+
+      const qrCode = new QRCode(qrcodeContainer, {
+        text: qrData,
+        width: 256,
+        height: 256
+      });
+
+      const downloadLink = document.getElementById("downloadLink");
+      downloadLink.href = qrcodeContainer.querySelector("img").src;
+      document.getElementById("download").style.display = "block";
+    }
+
+    // Initialize fields
+    showFields();
+  </script>
+</body>
+</html>
