@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Generator</title>
+    <title>QR Cody</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
 
@@ -69,6 +69,7 @@
             color: #4a3721;
         }
 
+        /* messy css block */
         .input-group {
             display: flex;
             gap: 12px;
@@ -370,19 +371,48 @@
             width: 120px;
             accent-color: #8b6e4b;
         }
+
+        @media screen and (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            input[type="text"] {
+                width: auto;
+            }
+
+            select {
+                width: auto;
+            }
+
+            .advanced-toggle {
+                margin-top: 1rem;
+            }
+        }
     </style>
 </head>
 
 <body>
 
     <div class="container" id="main-container">
-        <h1>QR Generator</h1>
+        <h1>QR Gen</h1>
         <div class="input-group">
-            <input type="text" placeholder="Enter text or URL..." id="qr-text">
+            <input type="text" placeholder="Type stuff..." id="qr-text">
             <select id="qr-type">
                 <option value="text">Text</option>
                 <option value="url">URL</option>
-                <option value="image">Image Link</option>
+                <option value="image">Img Link</option>
                 <option value="contact">Contact</option>
                 <option value="wifi">WiFi</option>
                 <option value="email">Email</option>
@@ -390,17 +420,17 @@
         </div>
 
         <div class="advanced-toggle" id="advanced-toggle">
-            <span>Advanced Customization</span>
+            <span>More stuff</span>
             <span id="toggle-icon">▼</span>
         </div>
 
         <div class="advanced-menu" id="advanced-menu">
             <div class="control-row">
-                <label>QR Color</label>
+                <label>Color</label>
                 <input type="color" id="qr-color" value="#000000">
             </div>
             <div class="control-row">
-                <label>Background</label>
+                <label>BG</label>
                 <input type="color" id="bg-color" value="#ffffff">
             </div>
             <div class="control-row">
@@ -408,108 +438,112 @@
                 <input type="range" id="qr-margin" min="0" max="10" value="1">
             </div>
             <div class="control-row">
-                <label>QR Shadow</label>
+                <label>Shadow</label>
                 <input type="range" id="qr-shadow" min="0" max="20" value="0">
             </div>
         </div>
 
         <button class="btn" id="gen-btn" style="margin-top: 1.5rem;">
-            <span id="btn-text">Generate QR Code</span>
+            <span id="btn-text">Make QR</span>
         </button>
 
         <div id="qr-result" style="display: none; margin-top: 2rem; position: relative;">
             <div id="particle-container"></div>
-            <div id="loading" style="display: none; margin-bottom: 1rem;">Generating...</div>
-            <img id="qr-img" src="" alt="QR Code"
+            <div id="loading" style="display: none; margin-bottom: 1rem;">Cooking...</div>
+            <img id="qr-img" src="" alt="QR code"
                 style="max-width: 100%; border-radius: 12px; transition: opacity 0.5s ease; opacity: 0;">
             <div class="action-links">
-                <a id="download-link" href="#" download="qrcode.png">Download QR Code</a>
-                <a id="copy-btn">Copy to Clipboard</a>
+                <a id="download-link" href="#" download="qrcode.png">Download</a>
+                <a id="copy-btn">Copy it</a>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        made with &lt;3 by <a href="https://bgtulk.dev" target="_blank">BGtulk</a>
+        made w/ <3 by <a href="https://bgtulk.dev" target="_blank">BGtulk</a>
     </div>
 
     <script>
-        const qrType = document.getElementById('qr-type');
-        const qrInput = document.getElementById('qr-text');
-        const genBtn = document.getElementById('gen-btn');
-        const qrResult = document.getElementById('qr-result');
-        const qrImg = document.getElementById('qr-img');
-        const loading = document.getElementById('loading');
-        const downloadLink = document.getElementById('download-link');
-        const copyBtn = document.getElementById('copy-btn');
-        const mainContainer = document.getElementById('main-container');
-        const btnText = document.getElementById('btn-text');
+        var type_qr = document.getElementById('qr-type');
+        var inp = document.getElementById('qr-text');
+        var do_gen = document.getElementById('gen-btn');
+        var res = document.getElementById('qr-result');
+        var img_qr = document.getElementById('qr-img');
 
-        const advToggle = document.getElementById('advanced-toggle');
-        const advMenu = document.getElementById('advanced-menu');
-        const toggleIcon = document.getElementById('toggle-icon');
-        const qrColor = document.getElementById('qr-color');
-        const bgColor = document.getElementById('bg-color');
-        const qrMargin = document.getElementById('qr-margin');
-        const qrShadow = document.getElementById('qr-shadow');
-        const particleContainer = document.getElementById('particle-container');
+        // var loading = ...
+        var load = document.getElementById('loading');
+        var dl = document.getElementById('download-link');
+        var cpy = document.getElementById('copy-btn');
+        var cont = document.getElementById('main-container');
+        var txt_btn = document.getElementById('btn-text');
 
-        advToggle.addEventListener('click', () => {
-            const isVisible = advMenu.style.display === 'block';
-            advMenu.style.display = isVisible ? 'none' : 'block';
-            toggleIcon.textContent = isVisible ? '▼' : '▲';
+        var adv_tog = document.getElementById('advanced-toggle');
+        var adv_menu = document.getElementById('advanced-menu');
+        var tog_icon = document.getElementById('toggle-icon');
+
+        var col_qr = document.getElementById('qr-color');
+        var col_bg = document.getElementById('bg-color');
+        var marg = document.getElementById('qr-margin');
+        var shdw = document.getElementById('qr-shadow');
+        var part_cont = document.getElementById('particle-container');
+
+        adv_tog.addEventListener('click', () => {
+            let is_vis = adv_menu.style.display === 'block';
+
+            if (is_vis) {
+                adv_menu.style.display = 'none';
+            } else {
+                adv_menu.style.display = 'block';
+            }
+
+            tog_icon.textContent = is_vis ? '▼' : '▲';
         });
 
-        function createParticles(color) {
-            particleContainer.innerHTML = '';
-            const particleCount = 60;
-            const target = qrImg.getBoundingClientRect();
-            const targetX = target.left + target.width / 2;
-            const targetY = target.top + target.height / 2;
+        function make_parts(c) {
+            part_cont.innerHTML = '';
+            var cnt = 60;
+            var r = img_qr.getBoundingClientRect(); // get size
 
-            const shapes = [
+            var tx = r.left + r.width / 2;
+            var ty = r.top + r.height / 2;
+
+            var shps = [
                 'polygon(50% 0%, 0% 100%, 100% 100%)',
                 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
                 'polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%)',
                 'polygon(50% 0%, 100% 38%, 81% 100%, 19% 100%, 0% 38%)'
             ];
 
-            for (let i = 0; i < particleCount; i++) {
-                const p = document.createElement('div');
+            for (let i = 0; i < cnt; i++) {
+
+                let p = document.createElement('div');
                 p.className = 'qr-particle';
-                p.style.backgroundColor = color;
+                p.style.backgroundColor = c;
 
-                const size = 10 + Math.random() * 15;
-                p.style.width = `${size}px`;
-                p.style.height = `${size}px`;
-                p.style.clipPath = shapes[Math.floor(Math.random() * shapes.length)];
+                let s = 10 + Math.random() * 15;
+                p.style.width = s + 'px';
+                p.style.height = s + 'px';
 
-                let startX, startY;
-                const edge = Math.floor(Math.random() * 4);
-                if (edge === 0) {
-                    startX = Math.random() * window.innerWidth;
-                    startY = -50;
-                } else if (edge === 1) {
-                    startX = window.innerWidth + 50;
-                    startY = Math.random() * window.innerHeight;
-                } else if (edge === 2) {
-                    startX = Math.random() * window.innerWidth;
-                    startY = window.innerHeight + 50;
-                } else {
-                    startX = -50;
-                    startY = Math.random() * window.innerHeight;
-                }
+                p.style.clipPath = shps[Math.floor(Math.random() * shps.length)];
 
-                p.style.left = `${startX}px`;
-                p.style.top = `${startY}px`;
+                let sx, sy;
+                let edge = Math.floor(Math.random() * 4);
+
+                if (edge == 0) { sx = Math.random() * window.innerWidth; sy = -50; }
+                else if (edge == 1) { sx = window.innerWidth + 50; sy = Math.random() * window.innerHeight; }
+                else if (edge == 2) { sx = Math.random() * window.innerWidth; sy = window.innerHeight + 50; }
+                else { sx = -50; sy = Math.random() * window.innerHeight; }
+
+                p.style.left = sx + 'px';
+                p.style.top = sy + 'px';
                 p.style.transform = `rotate(${Math.random() * 360}deg) scale(0.5)`;
                 p.style.opacity = '1';
 
                 document.body.appendChild(p);
 
                 setTimeout(() => {
-                    p.style.left = `${targetX}px`;
-                    p.style.top = `${targetY}px`;
+                    p.style.left = tx + 'px';
+                    p.style.top = ty + 'px';
                     p.style.transform = 'rotate(0deg) scale(1) translate(-50%, -50%)';
                     p.style.opacity = '0';
 
@@ -518,151 +552,154 @@
             }
         }
 
-        const placeholders = {
-            text: "Enter text...",
-            url: "Enter URL (e.g. https://google.com)...",
-            image: "Enter Image URL...",
-            contact: "Enter Name, Phone...",
-            wifi: "Format: SSID,Password",
-            email: "Enter Email Address..."
+        var places = {
+            text: "text here...",
+            url: "url here (https://...)...",
+            image: "img url...",
+            contact: "name, phone...",
+            wifi: "ssid,password",
+            email: "email addr..."
         };
 
-        qrType.addEventListener('change', () => {
-            const selectedType = qrType.value;
-            qrInput.placeholder = placeholders[selectedType] || "Enter content...";
-            qrInput.value = "";
-            qrResult.style.display = 'none';
-            qrInput.focus();
+        type_qr.addEventListener('change', () => {
+            var t = type_qr.value;
+            inp.placeholder = places[t] || "content...";
+            inp.value = "";
+            res.style.display = 'none';
+            inp.focus();
         });
 
-        function formatData(type, val) {
-            switch (type) {
-                case 'url':
-                    return val.startsWith('http') ? val : `https://${val}`;
-                case 'email':
-                    return `mailto:${val}`;
-                case 'wifi':
-                    const [ssid, pwd] = val.split(',').map(s => s.trim());
-                    return `WIFI:S:${ssid};T:WPA;P:${pwd};;`;
-                case 'contact':
-                    return `BEGIN:VCARD\nVERSION:3.0\nFN:${val}\nEND:VCARD`;
-                default:
-                    return val;
+        function do_fmt(t, v) {
+            if (t == 'url') {
+                return v.startsWith('http') ? v : `https://${v}`;
             }
+            if (t == 'email') return `mailto:${v}`;
+
+            if (t == 'wifi') {
+                let [ssid, pwd] = v.split(',').map(s => s.trim());
+                return `WIFI:S:${ssid};T:WPA;P:${pwd};;`;
+            }
+
+            if (t == 'contact') return `BEGIN:VCARD\nVERSION:3.0\nFN:${v}\nEND:VCARD`;
+
+            return v;
         }
 
-        genBtn.addEventListener('click', () => {
-            const val = qrInput.value.trim();
-            if (!val) {
-                alert("Please enter some content!");
+        do_gen.addEventListener('click', () => {
+            var v = inp.value.trim();
+
+            if (!v) {
+                alert("put something!");
                 return;
             }
 
-            const startGeneration = () => {
-                qrImg.src = "";
-                qrImg.classList.remove('bounce-in', 'shrink-exit');
-                qrImg.style.display = 'none';
-                qrResult.style.display = 'block';
-                loading.style.display = 'block';
-                downloadLink.style.display = 'none';
-                copyBtn.style.display = 'none';
+            var func = () => {
+                img_qr.src = "";
+                img_qr.classList.remove('bounce-in', 'shrink-exit');
+                img_qr.style.display = 'none';
+                res.style.display = 'block';
+                load.style.display = 'block';
+                dl.style.display = 'none';
+                cpy.style.display = 'none';
 
-                changeButtonText("Your QR code is cooking");
-                genBtn.disabled = true;
+                chg_txt("cooking...");
+                do_gen.disabled = true;
 
-                const formattedData = formatData(qrType.value, val);
-                const color = qrColor.value.substring(1);
-                const bg = bgColor.value.substring(1);
-                const margin = qrMargin.value;
-                const shadow = qrShadow.value;
+                var fmt = do_fmt(type_qr.value, v);
+                var c = col_qr.value.substring(1);
+                var b = col_bg.value.substring(1);
+                var m = marg.value;
+                var s = shdw.value;
 
-                const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(formattedData)}&color=${color}&bgcolor=${bg}&margin=${margin}`;
+                var url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(fmt)}&color=${c}&bgcolor=${b}&margin=${m}`;
 
-                qrImg.onload = () => {
-                    loading.style.display = 'none';
-                    qrImg.style.display = 'inline-block';
+                img_qr.onload = function () {
+                    load.style.display = 'none';
+                    img_qr.style.display = 'inline-block';
 
-                    createParticles(qrColor.value);
+                    make_parts(col_qr.value);
 
                     setTimeout(() => {
-                        qrImg.classList.remove('bounce-in');
-                        void qrImg.offsetWidth;
-                        qrImg.classList.add('bounce-in');
+                        img_qr.classList.remove('bounce-in');
+                        void img_qr.offsetWidth; // trigger reflow
+                        img_qr.classList.add('bounce-in');
 
-                        mainContainer.classList.remove('shake');
-                        void mainContainer.offsetWidth;
-                        mainContainer.classList.add('shake');
+                        cont.classList.remove('shake');
+                        void cont.offsetWidth;
+                        cont.classList.add('shake');
 
-                        qrImg.style.display = 'inline-block';
-                        qrImg.style.boxShadow = `0 ${shadow / 2}px ${shadow}px rgba(0,0,0,0.2)`;
-                        downloadLink.href = apiUrl;
-                        downloadLink.style.display = 'inline-block';
-                        copyBtn.style.display = 'inline-block';
-                        copyBtn.innerText = "Copy to Clipboard";
+                        img_qr.style.display = 'inline-block';
+                        img_qr.style.boxShadow = `0 ${s / 2}px ${s}px rgba(0,0,0,0.2)`;
+                        dl.href = url;
+                        dl.style.display = 'inline-block';
+                        cpy.style.display = 'inline-block';
+                        cpy.innerText = "Copy it";
 
-                        changeButtonText("Generate QR Code");
-                        genBtn.disabled = false;
+                        chg_txt("Make QR");
+                        do_gen.disabled = false;
                     }, 900);
                 };
 
-                qrImg.src = apiUrl;
+                img_qr.src = url;
             };
 
-            if (qrImg.src && qrImg.style.display !== 'none') {
-                qrImg.classList.add('shrink-exit');
-                setTimeout(startGeneration, 300);
+            if (img_qr.src && img_qr.style.display != 'none') {
+                img_qr.classList.add('shrink-exit');
+                setTimeout(func, 300);
             } else {
-                startGeneration();
+                func();
             }
         });
 
-        qrInput.placeholder = placeholders[qrType.value];
+        inp.placeholder = places[type_qr.value];
 
-        function changeButtonText(newText) {
-            btnText.classList.remove('expand');
-            btnText.classList.add('crunch');
+        function chg_txt(nt) {
+            txt_btn.classList.remove('expand');
+            txt_btn.classList.add('crunch');
 
             setTimeout(() => {
-                btnText.innerText = newText;
-                btnText.classList.remove('crunch');
-                btnText.classList.add('expand');
+                txt_btn.innerText = nt;
+                txt_btn.classList.remove('crunch');
+                txt_btn.classList.add('expand');
             }, 300);
         }
 
-        function showButtonFeedback(btn) {
-            btn.classList.add('mini-shake');
-            let tick = btn.querySelector('.tick-icon');
-            if (!tick) {
-                tick = document.createElement('span');
-                tick.className = 'tick-icon';
-                tick.innerHTML = '✓';
-                btn.appendChild(tick);
+        function show_feed(b) {
+            b.classList.add('mini-shake');
+            var t = b.querySelector('.tick-icon');
+
+            if (!t) {
+                t = document.createElement('span');
+                t.className = 'tick-icon';
+                t.innerHTML = '✓';
+                b.appendChild(t);
             }
 
-            setTimeout(() => tick.classList.add('show'), 10);
+            setTimeout(() => t.classList.add('show'), 10);
 
             setTimeout(() => {
-                tick.classList.remove('show');
-                btn.classList.remove('mini-shake');
+                t.classList.remove('show');
+                b.classList.remove('mini-shake');
             }, 1000);
         }
 
-        downloadLink.addEventListener('click', () => {
-            showButtonFeedback(downloadLink);
+        dl.addEventListener('click', () => {
+            show_feed(dl);
         });
 
-        copyBtn.addEventListener('click', async () => {
+        cpy.addEventListener('click', async () => {
             try {
-                showButtonFeedback(copyBtn);
-                const response = await fetch(qrImg.src);
-                const blob = await response.blob();
+                show_feed(cpy);
+                var resp = await fetch(img_qr.src);
+                var blb = await resp.blob();
                 await navigator.clipboard.write([
-                    new ClipboardItem({ 'image/png': blob })
+                    new ClipboardItem({ 'image/png': blb })
                 ]);
-            } catch (err) {
-                console.error("Clipboard copy failed:", err);
+            } catch (e) {
+                // console.log(e);
             }
         });
+
     </script>
 </body>
 
